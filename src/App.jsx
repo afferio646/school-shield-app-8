@@ -1618,20 +1618,19 @@ export default function App() {
                     onLegalLinkClick={handleOpenLegalJournal} 
                 />;
 
-            case 'handbook':
-                return <Handbook
-                   onViewAlertDetail={setViewedAlert} 
+           case 'handbook':
+              return <Handbook
+                   onViewAlertDetail={setViewedAlert}
                    handbookContent={handbook}
-                   selectedSection={selectedSection}
-                   setSelectedSection={setSelectedSection}
-                   isSectionLanguageOpen={isSectionLanguageOpen}
-                   setIsSectionLanguageOpen={setIsSectionLanguageOpen}
                    pendingUpdates={pendingUpdates}
                    archivedUpdates={archivedUpdates}
                    monitoredTrends={monitoredTrends}
                    onViewUpdate={setReviewingUpdate}
                    apiKey={GEMINI_API_KEY}
-                   HandbookVulnerabilitiesCardComponent={(props) => <HandbookVulnerabilitiesCard {...props} sections={handbookSections}/>}
+                   HandbookVulnerabilitiesCardComponent={(props) => <HandbookVulnerabilitiesCard {...props} sections={handbookSections} onSectionLinkClick={handleSectionLinkClick} />}
+                   // ADD THESE TWO PROPS TO PROVIDE DATA TO THE RESTORED SECTIONS
+                   handbookSections={handbookSections}
+                   onSectionLinkClick={handleSectionLinkClick}
                 />;
 
             case 'calendar':
