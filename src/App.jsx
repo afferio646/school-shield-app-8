@@ -229,39 +229,30 @@ function HandbookSectionModal({ section, onClose }) {
 // --- Handbook Vulnerabilities Card Component ---
 function HandbookVulnerabilitiesCard({ sections, onSectionLinkClick }) {
     const [isVulnerabilitiesRevealed, setIsVulnerabilitiesRevealed] = useState(false);
-    const [isMonitoringSystemRevealed, setIsMonitoringSystemRevealed] = useState(false);
+    // REMOVED: The state for the other button is no longer needed.
+    // const [isMonitoringSystemRevealed, setIsMonitoringSystemRevealed] = useState(false);
 
+    // (The monitoringProcess array can be removed if not used elsewhere, but it's safe to leave)
     const monitoringProcess = [
-        { title: "24/7 Legislative Intelligence", details: "Real-time scanning of congressional bills, state legislature activity, and regulatory agency updates. Automatic cross-referencing with your current handbook language. Instant alerts when new laws impact existing policies." },
-        { title: "Court Decision Impact Analysis", details: "Daily monitoring of employment law rulings and education-specific cases. Predictive analysis of how new precedents affect your policy language. Risk assessment of potentially vulnerable handbook sections." },
-        { title: "Industry Incident Tracking", details: "Analysis of recent school-related legal settlements and disputes. Pattern recognition identifying emerging liability areas. Proactive flagging of policies that led to problems at peer institutions." },
-        { title: "Regulatory Agency Monitoring", details: "EEOC, NLRB, DOL, and state agency guidance updates. Department of Education policy shifts and compliance requirements. Professional association best practice evolution tracking." },
-        { title: "AI-Driven Vulnerability Scoring", details: "Machine learning algorithms assess policy risk levels. Prioritization of vulnerabilities by urgency and potential impact. Trend analysis predicting future compliance challenges." },
-        { title: "Contextual Recommendations", details: "Section-specific improvement suggestions with draft language. Implementation timelines based on legal urgency. Integration with audit findings for comprehensive policy updates." }
+        { title: "24/7 Legislative Intelligence", details: "..." },
     ];
 
     return (
-        <div className="shadow-2xl border-0 rounded-2xl mb-6" style={{ background: "#4B5C64" }}>
-            <div className="p-6" style={{ color: "#fff" }}>
-                <h2 className="text-xl font-bold" style={{ color: "#fff" }}>IQ Handbook Vulnerabilities</h2>
-                <div className="mt-4 text-white space-y-4">
+        <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64" }}>
+            <div className="p-6 text-white">
+                <h2 className="text-xl font-bold mb-4">IQ Handbook Vulnerabilities</h2>
+                <div className="space-y-3 text-gray-200">
                     <p className="font-semibold">"Real-Time Vulnerability Monitoring - Continuous Policy Protection & Risk Alerts"</p>
                     <p>Dynamically powered surveillance system that continuously monitors federal regulations, state legislation, court decisions, and industry developments to identify emerging vulnerabilities in your current handbook policies.</p>
-                    <p>Unlike static annual reviews, this system provides ongoing protection by instantly flagging policy gaps, regulatory changes, and compliance risks as they develop.</p>
                 </div>
                 <div className="mt-6">
                     <button
-                        className="bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow hover:bg-blue-800 w-full mb-2"
+                        className="bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow hover:bg-blue-800 w-full"
                         onClick={() => setIsVulnerabilitiesRevealed(!isVulnerabilitiesRevealed)}
                     >
                         {isVulnerabilitiesRevealed ? "Close Vulnerabilities" : "Show All Vulnerabilities"}
                     </button>
-                    <button
-                        className="bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow hover:bg-blue-800 w-full"
-                        onClick={() => setIsMonitoringSystemRevealed(!isMonitoringSystemRevealed)}
-                    >
-                        {isMonitoringSystemRevealed ? "Close" : "Our Continuous Monitoring System"}
-                    </button>
+                    {/* REMOVED: The "Our Continuous Monitoring System" button is gone. */}
                 </div>
                 {isVulnerabilitiesRevealed && (
                     <div className="mt-4 text-white border-t border-gray-500 pt-4">
@@ -280,17 +271,7 @@ function HandbookVulnerabilitiesCard({ sections, onSectionLinkClick }) {
                         </ul>
                     </div>
                 )}
-                {isMonitoringSystemRevealed && (
-                    <div className="mt-4 text-white space-y-4 border-t border-gray-500 pt-4">
-                        {monitoringProcess.map((item, index) => (
-                            <div key={index}>
-                                <p><strong>{index + 1}. {item.title}.</strong></p>
-                                <p className="text-sm pl-4">{item.details}</p>
-                            </div>
-                        ))}
-                        <p className="italic mt-4 text-sm">The result: Your handbook policies are protected by continuous intelligence, ensuring vulnerabilities are identified and addressed before they become compliance issues or legal risks.</p>
-                    </div>
-                )}
+                {/* REMOVED: The conditional block for the monitoring system details is also gone. */}
             </div>
         </div>
     );
