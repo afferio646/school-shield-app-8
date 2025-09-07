@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
-import { Archive, Eye, Bell } from "lucide-react";
+import { Archive, Bell, Eye } from "lucide-react";
 
-// This is a small, self-contained helper component for the section title.
-function SectionHeader({ icon, title, children }) {
+function SectionHeader({ icon, title }) {
     return (
         <div className="flex items-center gap-3 mb-4">
             {icon}
             <h2 className="text-2xl font-bold">{title}</h2>
-            {children}
         </div>
     );
 }
 
-export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, monitoredTrends, onViewUpdate }) {
-    const [activeTab, setActiveTab] = useState('pending');
+export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, monitoredTrends, onViewUpdate, onViewAlertDetail }) {
+    // --- CHANGE 1: Tabs are now closed by default ---
+    const [activeTab, setActiveTab] = useState(null);
+
+    const handleTabClick = (tabName) => {
+        // This makes the tab a toggle. Clicking the same one closes it.
+        setActiveTab(prevTab => (prevTab === tabName ? null : tabName));
+    };
 
     const TabButton = ({ tabName, label, count }) => (
         <button
-            onClick={() => setActiveTab(tabName)}
+            onClick={() => handleTabClick(tabName)}
             className={`px-4 py-2 text-sm font-semibold rounded-t-lg transition-colors ${
                 activeTab === tabName
                     ? 'bg-gray-700 text-white'
@@ -28,16 +32,21 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
         </button>
     );
 
-    const renderUpdateItem = (item, isPending = false) => (
-        <div key={item.id} className="p-4 bg-gray-700 rounded-lg flex items-center justify-between shadow-md gap-4">
-            <div className="flex-grow">
-                <p className={`font-semibold ${isPending ? 'text-white' : 'text-gray-300'}`}>{item.title}</p>
+    const renderUpdateItem = (item) => (
+        <div key={item.id} className="p-3 bg-gray-700 rounded-lg flex items-center justify-between shadow-md gap-4">
+            {/* --- CHANGE 2: Alert items are now clickable links to the new modal --- */}
+            <div 
+                className="flex-grow cursor-pointer group"
+                onClick={() => onViewAlertDetail(item)}
+            >
+                <p className="font-semibold text-white group-hover:text-blue-300 transition-colors">{item.title}</p>
                 <p className="text-xs text-gray-400 mt-1">
                     Date Identified: {item.date}
                     {item.type === 'Immediate Action Required' && <span className="ml-2 font-bold text-red-400">URGENT</span>}
                 </p>
             </div>
-            {isPending && (
+            {/* Only show the review button for pending/actionable items */}
+            {activeTab === 'pending' && (
                 <button
                     onClick={() => onViewUpdate(item)}
                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-transform transform hover:scale-105"
@@ -51,11 +60,9 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
 
     const renderContent = () => {
         let items;
-        let isPending = false;
         switch (activeTab) {
             case 'pending':
                 items = pendingUpdates;
-                isPending = true;
                 break;
             case 'archived':
                 items = archivedUpdates;
@@ -66,28 +73,29 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
             default:
                 items = [];
         }
-
         return items.length > 0
-            ? items.map(item => renderUpdateItem(item, isPending))
-            : <p className="text-center text-gray-400 py-8">No items in this category.</p>;
+            ? items.map(item => renderUpdateItem(item))
+            : <p className="text-center text-gray-400 py-8">No items to display.</p>;
     };
 
     return (
         <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
             <div className="p-6">
-                {/* --- RENAMED THIS TITLE --- */}
                 <SectionHeader icon={<Bell className="text-[#faecc4]" size={28} />} title="IQ Handbook Watchtower" />
                 <p className="mb-6 text-gray-300">Proactive identification of current industry legislation and trends that are analyzed for their impact on your handbook. Review alerts that require your attention.</p>
                 
-                <div className="flex border-b border-gray-600 mb-4">
+                <div className="flex border-b border-gray-600">
                     <TabButton tabName="pending" label="Actionable Alerts" count={pendingUpdates.length} />
                     <TabButton tabName="archived" label="Archived" count={archivedUpdates.length} />
                     <TabButton tabName="monitored" label="Monitored Alerts" count={monitoredTrends.length} />
                 </div>
                 
-                <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                    {renderContent()}
-                </div>
+                {/* --- CHANGE 1 (cont.): Content only shows if a tab is active --- */}
+                {activeTab && (
+                    <div className="space-y-3 mt-4 max-h-[400px] overflow-y-auto pr-2">
+                        {renderContent()}
+                    </div>
+                )}
             </div>
         </div>
     );
