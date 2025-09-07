@@ -1313,8 +1313,27 @@ export default function App() {
     const [handbook, setHandbook] = useState(handbookSectionLanguage);
 
     const [pendingUpdates, setPendingUpdates] = useState([
-    { id: 1, title: "New State Law on Student Social Media Interaction", date: "2025-09-04", type: "Immediate Action Required", affectedSection: "6. Code of Conduct", rationale: "This new state law requires a more explicit policy than what is currently stated in the handbook regarding teacher-student communication on social media.", suggestedLanguage: "\n\n**6.3.1 Social Media and Electronic Communication:** All electronic communication between employees and students must be professional in nature and transparent. Employees are prohibited from 'friending' or 'following' current students on personal social media accounts. All communication should occur on school-approved platforms." }
-   ]);
+    { 
+      id: 1, 
+      title: "New State Law on Student Social Media Interaction", 
+      date: "2025-09-04", 
+      type: "Immediate Action Required", 
+      affectedSection: "6. Code of Conduct", 
+      rationale: "This new state law requires a more explicit policy than what is currently stated...",
+      // ADD THIS NEW PROPERTY WITH THE FULL TEXT
+      sourceText: `
+**House Bill 1412 - Student and Employee Digital Conduct**
+
+**Section 1: Definitions**
+(a) "Electronic Communication" means any transfer of signs, signals, writing, images, sounds, data, or intelligence of any nature transmitted in whole or in part by a wire, radio, electromagnetic, photoelectronic or photooptical system.
+(b) "Personal Social Media Account" means an account on a social media platform that is used by a school employee primarily for personal communications unrelated to school business.
+
+**Section 2: Prohibited Conduct**
+(a) A school employee is prohibited from establishing or maintaining a personal social media connection with a student currently enrolled in the school district. This includes, but is not limited to, accepting 'friend requests' or engaging in private messaging on platforms not officially sanctioned by the school for educational purposes.
+(b) All electronic communication between a school employee and a student must be transparent, professional, and limited to educational matters. Such communication should, whenever possible, take place on school-sanctioned platforms where administrative oversight is possible.
+`
+    }
+]);
     const [archivedUpdates, setArchivedUpdates] = useState([]);
     const [monitoredTrends, setMonitoredTrends] = useState([
     { id: 2, title: "AI Integration in K-12 Curriculum", date: "2025-08-28", type: "Monitor for Future Consideration" },
