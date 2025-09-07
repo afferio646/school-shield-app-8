@@ -1639,7 +1639,7 @@ export default function App() {
 
             case 'handbook':
                 return <Handbook
-                   onViewAlertDetail={setViewedAlert} // <-- ADD THIS LINE
+                   onViewAlertDetail={setViewedAlert} 
                    handbookContent={handbook}
                    selectedSection={selectedSection}
                    setSelectedSection={setSelectedSection}
@@ -1800,6 +1800,7 @@ export default function App() {
                     apiKey={GEMINI_API_KEY}
                 />
             )}
+            {viewedAlert && <AlertDetailModal alert={viewedAlert} onClose={() => setViewedAlert(null)} />}
         </div>
     );
 }
