@@ -1,7 +1,8 @@
 import React from 'react';
 import { FileText, Lightbulb, Check, Archive, X, ArrowLeft } from "lucide-react";
 
-export default function ReviewUpdate({ update, handbookSectionText, onApprove, onArchive, onDismiss, onClose }) {
+// The new onViewAlertDetail prop is added here
+export default function ReviewUpdate({ update, handbookSectionText, onApprove, onArchive, onDismiss, onClose, onViewAlertDetail }) {
     
     // Helper to render the handbook text with the new suggestion highlighted
     const renderProposedChange = () => {
@@ -32,7 +33,8 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
             </button>
 
             <div className="bg-[#4B5C64] text-white p-6 rounded-2xl shadow-2xl">
-                <h1 className="text-3xl font-bold text-[#faecc4] mb-2">Watchtower Alert Analysis</h1>
+                {/* --- CHANGE 1: Title has been renamed --- */}
+                <h1 className="text-3xl font-bold text-[#faecc4] mb-2">Review Proposed Handbook Change</h1>
                 <p className="text-gray-300 mb-6">Analyze the generated suggestion and choose an action.</p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -43,7 +45,13 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
                             <FileText size={20} /> IQ Alert
                         </h2>
                         <div className="text-gray-200 flex-grow">
-                            <p className="font-semibold">{update.title}</p>
+                            {/* --- CHANGE 2: The alert title is now a clickable button --- */}
+                            <button 
+                                onClick={() => onViewAlertDetail(update)} 
+                                className="font-semibold text-left w-full hover:text-blue-300 transition-colors"
+                            >
+                                {update.title}
+                            </button>
                             <p className="text-xs text-gray-400 mt-1">Date Identified: {update.date}</p>
                             <p className={`mt-1 text-xs font-bold ${update.type === 'Immediate Action Required' ? 'text-red-400' : 'text-yellow-400'}`}>{update.type}</p>
                         </div>
