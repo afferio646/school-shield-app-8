@@ -11,11 +11,9 @@ function SectionHeader({ icon, title }) {
 }
 
 export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, monitoredTrends, onViewUpdate, onViewAlertDetail }) {
-    // --- CHANGE 1: Tabs are now closed by default ---
     const [activeTab, setActiveTab] = useState(null);
 
     const handleTabClick = (tabName) => {
-        // This makes the tab a toggle. Clicking the same one closes it.
         setActiveTab(prevTab => (prevTab === tabName ? null : tabName));
     };
 
@@ -24,17 +22,22 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
             onClick={() => handleTabClick(tabName)}
             className={`px-4 py-2 text-sm font-semibold rounded-t-lg transition-colors ${
                 activeTab === tabName
-                    ? 'bg-gray-700 text-white'
-                    : 'bg-gray-600 text-gray-400 hover:bg-gray-500'
+                    ? 'bg-gray-700 text-white' // Active tab is already white, which is good.
+                    // CHANGED: Inactive tab font is now brighter.
+                    : 'bg-gray-600 text-gray-200 hover:text-white' 
             }`}
         >
-            {label} {count > 0 && <span className={`ml-2 inline-block px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === tabName ? 'bg-red-500 text-white' : 'bg-gray-500 text-gray-200'}`}>{count}</span>}
+            {label} {count > 0 && 
+                // CHANGED: The badge is now always red.
+                <span className="ml-2 inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-red-500 text-white">
+                    {count}
+                </span>
+            }
         </button>
     );
 
     const renderUpdateItem = (item) => (
         <div key={item.id} className="p-3 bg-gray-700 rounded-lg flex items-center justify-between shadow-md gap-4">
-            {/* --- CHANGE 2: Alert items are now clickable links to the new modal --- */}
             <div 
                 className="flex-grow cursor-pointer group"
                 onClick={() => onViewAlertDetail(item)}
@@ -45,7 +48,6 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
                     {item.type === 'Immediate Action Required' && <span className="ml-2 font-bold text-red-400">URGENT</span>}
                 </p>
             </div>
-            {/* Only show the review button for pending/actionable items */}
             {activeTab === 'pending' && (
                 <button
                     onClick={() => onViewUpdate(item)}
@@ -90,7 +92,6 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
                     <TabButton tabName="monitored" label="Monitored Alerts" count={monitoredTrends.length} />
                 </div>
                 
-                {/* --- CHANGE 1 (cont.): Content only shows if a tab is active --- */}
                 {activeTab && (
                     <div className="space-y-3 mt-4 max-h-[400px] overflow-y-auto pr-2">
                         {renderContent()}
