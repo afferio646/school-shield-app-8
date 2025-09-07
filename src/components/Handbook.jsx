@@ -12,7 +12,7 @@ function HighlightedText({ text, highlight }) {
     return (<p className="text-sm leading-relaxed whitespace-pre-line">{parts.map((part, i) => regex.test(part) ? <span key={i} className="bg-yellow-300 font-bold text-black px-1 rounded">{part}</span> : part)}</p>);
 }
 
-// Full code for the Audit Card, now with an icon
+// Full code for the Audit Card, with an icon for consistency
 function HandbookAuditCard() {
     return (
         <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64" }}>
@@ -60,7 +60,6 @@ export default function Handbook({
     const [isAnalyzingTopic, setIsAnalyzingTopic] = useState(false);
     const [showSuggestionModal, setShowSuggestionModal] = useState(false);
     const [suggestedUpdate, setSuggestedUpdate] = useState("Based on the identified vulnerability, consider updating the policy to include specific language regarding the Fair Credit Reporting Act (FCRA) compliance during background checks.");
-    const suggestionSectionRef = useRef("");
 
     const handleTopicSearch = () => {
         if (!handbookTopicQuery) return;
@@ -79,6 +78,13 @@ export default function Handbook({
         }, 1500);
     };
     
+    // FIX 2: Corrected logic for the close button
+    const handleCloseSection = () => {
+        setIsSectionLanguageOpen(false);
+        // Resetting the selection provides a clean slate
+        setSelectedSection(""); 
+    }
+
     const currentVulnerabilities = selectedSection ? (handbookSections(onSectionLinkClick).find(s => s.section === selectedSection)?.vulnerabilities || []) : [];
 
     return (
@@ -115,7 +121,7 @@ export default function Handbook({
                             </div>
                             <button 
                                 className="text-sm font-semibold text-blue-300 hover:text-blue-200 mt-2" 
-                                onClick={() => setIsSectionLanguageOpen(false)}
+                                onClick={handleCloseSection} // Using the new handler
                             >
                                 Close Section
                             </button>
@@ -150,7 +156,7 @@ export default function Handbook({
                         </div>
                     )}
                     
-                    {/* --- RESTORED: The entire "Search by Topic" section is now back --- */}
+                    {/* RESTORED: The entire "Search by Topic" section is now back */}
                     <div className="mt-8 border-t border-gray-600 pt-6">
                         <h3 className="text-lg font-bold mb-2 text-[#faecc4]">2. Search Handbook by Topic</h3>
                         <p className="text-gray-300 mb-2">Enter a topic to find relevant language in the handbook.</p>
@@ -162,4 +168,54 @@ export default function Handbook({
                         />
                         <button
                             onClick={handleTopicSearch}
-                            disabled={
+                            // FIX 1: The build error was here. The closing brace was missing.
+                            disabled={isAnalyzingTopic}
+                            className="bg-blue-700 text-white font-semibold px-5 py-2 mt-2 rounded-lg shadow hover:bg-blue-800 disabled:bg-gray-500"
+                        >
+                            {isAnalyzingTopic ? 'Analyzing...' : 'Analyze Handbook'}
+                        </button>
+
+                        {handbookTopicResults && (
+                            <div className="mt-4">
+                                <h4 className="font-semibold text-lg">Search Results for "{handbookTopicQuery}"</h4>
+                                {handbookTopicResults.length > 0 ? (
+                                    handbookTopicResults.map((result, i) => (
+                                        <div key={i} className="mt-2 p-3 bg-gray-700 rounded-lg">
+                                            <h5 className="font-bold text-blue-300">{result.mainTitle}</h5>
+                                            {result.subsections.map((sub, j) => (
+                                                <div key={j} className="mt-1 border-t border-gray-600 pt-1">
+                                                    <HighlightedText text={sub} highlight={handbookTopicQuery} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ))
+                                ) : <p className="mt-2 text-gray-400">No results found.</p>}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            
+            <HandbookVulnerabilitiesCardComponent />
+            <HandbookComparisonCard apiKey={apiKey} />
+            <HandbookAuditCard /> 
+
+            {showSuggestionModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-lg w-full text-black">
+                        <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                            <TrendingUp className="text-emerald-600" size={24} /> Suggested Update
+                        </h3>
+                        <div className="mb-6 text-slate-700 font-medium whitespace-pre-line">{suggestedUpdate}</div>
+                        <div className="flex justify-end gap-2">
+                            <button className="rounded-lg px-5 py-2 border border-gray-300" onClick={() => setShowSuggestionModal(false)}>Cancel</button>
+                            <button className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 rounded-lg py-2" onClick={() => setShowSuggestionModal(false)}>
+                                Add Suggestion to Handbook
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
