@@ -1595,6 +1595,7 @@ export default function App() {
             const sectionText = handbook[sectionKey];
 
             return <ReviewUpdate
+                onViewAlertDetail={setViewedAlert}
                 update={reviewingUpdate}
                 handbookSectionText={sectionText}
                 onApprove={handleApproveUpdate}
@@ -1619,18 +1620,18 @@ export default function App() {
 
             case 'handbook':
                 return <Handbook
-                    handbookContent={handbook}
-                    selectedSection={selectedSection}
-                    setSelectedSection={setSelectedSection}
-                    isSectionLanguageOpen={isSectionLanguageOpen}
-                    setIsSectionLanguageOpen={setIsSectionLanguageOpen}
-                    handleSectionLinkClick={handleSectionLinkClick}
-                    pendingUpdates={pendingUpdates}
-                    archivedUpdates={archivedUpdates}
-                    monitoredTrends={monitoredTrends}
-                    onViewUpdate={setReviewingUpdate}
-                    apiKey={GEMINI_API_KEY}
-                    HandbookVulnerabilitiesCardComponent={(props) => <HandbookVulnerabilitiesCard {...props} sections={handbookSections}/>}
+                   onViewAlertDetail={setViewedAlert} // <-- ADD THIS LINE
+                   handbookContent={handbook}
+                   selectedSection={selectedSection}
+                   setSelectedSection={setSelectedSection}
+                   isSectionLanguageOpen={isSectionLanguageOpen}
+                   setIsSectionLanguageOpen={setIsSectionLanguageOpen}
+                   pendingUpdates={pendingUpdates}
+                   archivedUpdates={archivedUpdates}
+                   monitoredTrends={monitoredTrends}
+                   onViewUpdate={setReviewingUpdate}
+                   apiKey={GEMINI_API_KEY}
+                   HandbookVulnerabilitiesCardComponent={(props) => <HandbookVulnerabilitiesCard {...props} sections={handbookSections}/>}
                 />;
 
             case 'calendar':
