@@ -177,7 +177,15 @@ export default function Handbook({
 
                         {handbookTopicResults && (
                             <div className="mt-4">
+                                <div className="flex justify-between items-center mb-2">
                                 <h4 className="font-semibold text-lg">Search Results for "{handbookTopicQuery}"</h4>
+                                <button
+                                onClick={() => setHandbookTopicResults(null)}
+                                className="text-sm font-semibold text-blue-300 hover:text-blue-200"
+                               >
+                               Close
+                               </button>
+                            </div>
                                 {handbookTopicResults.length > 0 ? (
                                     handbookTopicResults.map((result, i) => (
                                         <div key={i} className="mt-2 p-3 bg-gray-700 rounded-lg">
