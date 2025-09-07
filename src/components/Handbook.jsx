@@ -1,12 +1,11 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { BookOpen, Calendar, Search, AlertCircle, TrendingUp, ClipboardCheck } from "lucide-react";
+import React, { useState, useRef } from 'react';
+import { BookOpen, Search, AlertCircle, TrendingUp, ClipboardCheck } from "lucide-react";
 
 import PolicyWatchtower from './PolicyWatchtower.jsx';
 import HandbookComparisonCard from './HandbookComparisonCard.jsx';
 
 // Helper component for search result highlighting
 function HighlightedText({ text, highlight }) {
-    // ... (This helper function's code is unchanged)
     if (!highlight || !text) return <p className="text-sm leading-relaxed whitespace-pre-line">{text}</p>;
     const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     const parts = text.split(regex);
@@ -15,16 +14,14 @@ function HighlightedText({ text, highlight }) {
 
 // Full code for the Audit Card, now with an icon
 function HandbookAuditCard() {
-    // ... (The logic for this component is unchanged)
+    // This component's code is unchanged
     return (
         <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64" }}>
             <div className="p-6 text-white">
-                {/* ADDED: Icon for consistency */}
                 <SectionHeader icon={<ClipboardCheck className="text-[#faecc4]" size={26} />} title="IQ Handbook Audit" />
                 <div className="space-y-3 text-gray-200">
                     <p className="font-semibold">"Comprehensive Handbook Intelligence Audit - Ensuring Policy Excellence & Legal Compliance"</p>
-                    <p>A systematic, multi-source analysis...</p>
-                    <p>Our quarterly/annual audit process...</p>
+                    <p>A systematic, multi-source analysis of your school handbook leveraging industry-leading databases, federal & state legislative monitoring, peer benchmarking from multiple schools, and expert legal review.</p>
                 </div>
                 <div className="flex flex-wrap gap-4 mt-6">
                     <button className="bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow hover:bg-blue-800">Audit Quarterly</button>
@@ -55,24 +52,36 @@ export default function Handbook({
     onViewAlertDetail,
     apiKey,
     HandbookVulnerabilitiesCardComponent,
-    handbookSections // <-- Add this prop to get vulnerability data
+    handbookSections
 }) {
-    // State for the component's functionality
     const [selectedSection, setSelectedSection] = useState("1. Introduction");
     const [isSectionLanguageOpen, setIsSectionLanguageOpen] = useState(false);
     const [handbookTopicQuery, setHandbookTopicQuery] = useState("");
     const [handbookTopicResults, setHandbookTopicResults] = useState(null);
     const [isAnalyzingTopic, setIsAnalyzingTopic] = useState(false);
     
-    // RESTORED: State for the "Suggested Changes" modal
+    // FIX 3: State for the "Suggested Changes" modal
     const [showSuggestionModal, setShowSuggestionModal] = useState(false);
-    const [suggestedUpdate, setSuggestedUpdate] = useState("");
+    const [suggestedUpdate, setSuggestedUpdate] = useState("Based on the identified vulnerability, consider updating the policy to include specific language regarding the Fair Credit Reporting Act (FCRA) compliance during background checks.");
     const suggestionSectionRef = useRef("");
 
-    // Handler for the topic search
-    const handleTopicSearch = () => { /* ... (this function is unchanged) ... */ };
-
-    // RESTORED: Find vulnerabilities for the currently selected section
+    const handleTopicSearch = () => {
+        if (!handbookTopicQuery) return;
+        setIsAnalyzingTopic(true);
+        setHandbookTopicResults(null);
+        setTimeout(() => {
+            const query = handbookTopicQuery.toLowerCase();
+            const results = [];
+            for (const sectionTitle in handbookContent) {
+                if (handbookContent[sectionTitle].toLowerCase().includes(query)) {
+                    results.push({ mainTitle: sectionTitle, subsections: [handbookContent[sectionTitle].trim()] });
+                }
+            }
+            setHandbookTopicResults(results);
+            setIsAnalyzingTopic(false);
+        }, 1500);
+    };
+    
     const currentVulnerabilities = (handbookSections(onSectionLinkClick).find(s => s.section === selectedSection)?.vulnerabilities || []);
 
     return (
@@ -90,9 +99,10 @@ export default function Handbook({
                     <SectionHeader icon={<BookOpen className="text-[#faecc4]" size={26} />} title="Handbook Section Review" />
                     
                     <h3 className="text-lg font-bold mb-2 text-[#faecc4]">1. Review by Section</h3>
-                    <label className="block font-medium mb-1 text-gray-200">Select Section</label>
+                    {/* FIX 1: The label text is now updated */}
+                    <label className="block font-medium mb-1 text-gray-200">Select Section to review the entire section language</label>
                     <select
-                        className="block w-full border rounded p-2 shadow text-black mb-4"
+                        className="block w-full border rounded p-2 shadow text-black mb-2"
                         value={selectedSection}
                         onChange={e => { setSelectedSection(e.target.value); setIsSectionLanguageOpen(true); }}
                     >
@@ -101,18 +111,21 @@ export default function Handbook({
                         ))}
                     </select>
                     
-                    <button className="text-md font-bold text-[#faecc4] cursor-pointer focus:outline-none" onClick={() => setIsSectionLanguageOpen(open => !open)}>
-                        {selectedSection.split('. ').slice(1).join('. ')}
-                        <span className="ml-2 text-xs font-normal text-gray-300">(Click to show/hide full Handbook Section language)</span>
-                    </button>
-
+                    {/* FIX 4: Replaced text link with a "Close" button that only appears when open */}
                     {isSectionLanguageOpen && (
-                        <div className="bg-gray-800 p-4 rounded-lg mt-2 shadow-inner border border-gray-700 whitespace-pre-line text-gray-200" style={{ maxHeight: "320px", overflowY: "auto" }}>
-                            {handbookContent[selectedSection] || "Language not available."}
-                        </div>
+                        <>
+                            <div className="bg-gray-800 p-4 rounded-lg mt-4 shadow-inner border border-gray-700 whitespace-pre-line text-gray-200" style={{ maxHeight: "320px", overflowY: "auto" }}>
+                                {handbookContent[selectedSection] || "Language not available."}
+                            </div>
+                            <button 
+                                className="text-sm font-semibold text-blue-300 hover:text-blue-200 mt-2" 
+                                onClick={() => setIsSectionLanguageOpen(false)}
+                            >
+                                Close Section
+                            </button>
+                        </>
                     )}
 
-                    {/* --- RESTORED: VULNERABILITIES SECTION AND SUGGESTION BUTTON --- */}
                     <div className="mt-6 border-t border-gray-600 pt-4">
                         <h4 className="font-semibold text-gray-200 mb-2">Potential Section Vulnerabilities</h4>
                         {currentVulnerabilities.length > 0 ? (
@@ -120,7 +133,8 @@ export default function Handbook({
                                 {currentVulnerabilities.map((vuln, i) => (
                                     <li key={i} className="p-3 bg-red-900 bg-opacity-50 border border-red-700 rounded-lg flex items-start gap-3">
                                         <AlertCircle size={18} className="text-red-400 mt-1 flex-shrink-0" />
-                                        <span className="text-red-200 text-sm">{vuln.text}</span>
+                                        {/* FIX 2: Vulnerability text is now bright white */}
+                                        <span className="text-white text-sm">{vuln.text}</span>
                                         <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold bg-gray-700 text-gray-300 flex-shrink-0">{vuln.source}</span>
                                     </li>
                                 ))}
@@ -138,18 +152,67 @@ export default function Handbook({
                             </button>
                         </div>
                     </div>
-                    {/* --- END OF RESTORED SECTION --- */}
 
-                    <h3 className="text-lg font-bold mt-8 mb-2 text-[#faecc4] border-t border-gray-600 pt-6">2. Search Handbook by Topic</h3>
-                    <p className="text-gray-300 mb-2">Enter a topic to find relevant language in the handbook.</p>
-                    {/* ... (Search functionality is unchanged) ... */}
+                    {/* FIX 5: The Search Handbook by Topic section is restored */}
+                    <div className="mt-8 border-t border-gray-600 pt-6">
+                        <h3 className="text-lg font-bold mb-2 text-[#faecc4]">2. Search Handbook by Topic</h3>
+                        <p className="text-gray-300 mb-2">Enter a topic to find relevant language in the handbook.</p>
+                        <textarea
+                            className="w-full min-h-[80px] p-2 rounded-md text-black"
+                            placeholder="e.g., Confidentiality, Remote Work, Discipline..."
+                            value={handbookTopicQuery}
+                            onChange={(e) => setHandbookTopicQuery(e.target.value)}
+                        />
+                        <button
+                            onClick={handleTopicSearch}
+                            disabled={isAnalyzingTopic}
+                            className="bg-blue-700 text-white font-semibold px-5 py-2 mt-2 rounded-lg shadow hover:bg-blue-800 disabled:bg-gray-500"
+                        >
+                            {isAnalyzingTopic ? 'Analyzing...' : 'Analyze Handbook'}
+                        </button>
+
+                        {handbookTopicResults && (
+                            <div className="mt-4">
+                                <h4 className="font-semibold text-lg">Search Results for "{handbookTopicQuery}"</h4>
+                                {handbookTopicResults.length > 0 ? (
+                                    handbookTopicResults.map((result, i) => (
+                                        <div key={i} className="mt-2 p-3 bg-gray-700 rounded-lg">
+                                            <h5 className="font-bold text-blue-300">{result.mainTitle}</h5>
+                                            {result.subsections.map((sub, j) => (
+                                                <div key={j} className="mt-1 border-t border-gray-600 pt-1">
+                                                    <HighlightedText text={sub} highlight={handbookTopicQuery} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ))
+                                ) : <p className="mt-2 text-gray-400">No results found.</p>}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
             
-            {/* REORDERED: The cards are now in the desired order */}
             <HandbookVulnerabilitiesCardComponent />
             <HandbookComparisonCard apiKey={apiKey} />
             <HandbookAuditCard /> 
+
+            {/* FIX 3: The modal for "Suggested Handbook Changes" is now rendered here */}
+            {showSuggestionModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-lg w-full text-black">
+                        <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                            <TrendingUp className="text-emerald-600" size={24} /> Suggested Update
+                        </h3>
+                        <div className="mb-6 text-slate-700 font-medium whitespace-pre-line">{suggestedUpdate}</div>
+                        <div className="flex justify-end gap-2">
+                            <button className="rounded-lg px-5 py-2 border border-gray-300" onClick={() => setShowSuggestionModal(false)}>Cancel</button>
+                            <button className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 rounded-lg py-2" onClick={() => setShowSuggestionModal(false)}>
+                                Add Suggestion to Handbook
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
