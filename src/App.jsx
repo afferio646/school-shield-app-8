@@ -243,7 +243,7 @@ function HandbookVulnerabilitiesCard({ sections, onSectionLinkClick }) {
     return (
         <div className="shadow-2xl border-0 rounded-2xl mb-6" style={{ background: "#4B5C64" }}>
             <div className="p-6" style={{ color: "#fff" }}>
-                <h2 className="text-xl font-bold" style={{ color: "#fff" }}>Handbook Vulnerabilities</h2>
+                <h2 className="text-xl font-bold" style={{ color: "#fff" }}>IQ Handbook Vulnerabilities</h2>
                 <div className="mt-4 text-white space-y-4">
                     <p className="font-semibold">"Real-Time Vulnerability Monitoring - Continuous Policy Protection & Risk Alerts"</p>
                     <p>Dynamically powered surveillance system that continuously monitors federal regulations, state legislation, court decisions, and industry developments to identify emerging vulnerabilities in your current handbook policies.</p>
