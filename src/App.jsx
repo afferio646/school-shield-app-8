@@ -9,6 +9,7 @@ import ReviewUpdate from './components/ReviewUpdate.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import Handbook from './components/Handbook.jsx';
 import AlertDetailModal from './components/AlertDetailModal.jsx';
+import AttendanceModal from './components/AttendanceModal.jsx';
 
 // --- SECURE API KEY HANDLING ---
 const GEMINI_API_KEY = "AIzaSyCYAfKVJ9BTLWHpNLDr0bHDsvYOdWMfIpw";
@@ -1784,6 +1785,9 @@ export default function App() {
                 />
             )}
             {viewedAlert && <AlertDetailModal alert={viewedAlert} onClose={() => setViewedAlert(null)} />}
+            {attendingEvent && (
+                <AttendanceModal event={attendingEvent} onClose={() => setAttendingEvent(null)} />
+            )}
         </div>
     );
 }
