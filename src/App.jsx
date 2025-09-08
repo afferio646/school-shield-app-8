@@ -1263,6 +1263,48 @@ const HOSQA = ({
 export default function App() {
     const [page, setPage] = useState("dashboard");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+     const [events, setEvents] = useState([
+    { 
+        date: '2025-09-09', 
+        title: 'Head of School - Town Hall',
+        eventType: 'School Meeting',
+        category: 'Governance',
+        location: 'Online',
+        description: 'An open forum for faculty and staff to discuss upcoming initiatives and address key issues with the Head of School.' 
+    },
+    { 
+        date: '2025-09-11', 
+        title: 'FMLA Guidance Webinar',
+        eventType: 'NAIS Webinar',
+        category: 'Human Resources, Legal',
+        location: 'Online',
+        description: 'This session provides an overview of the Family and Medical Leave Act (FMLA), focusing on compliance requirements for independent schools.'
+    },
+    { 
+        date: '2025-09-15', 
+        title: 'Board of Trustees Meeting',
+        eventType: 'School Meeting',
+        category: 'Governance, Finance',
+        location: 'Online',
+        description: 'Regularly scheduled meeting for the Board of Trustees to review financial reports, strategic goals, and committee updates.'
+    },
+    { 
+        date: '2025-09-25', 
+        title: 'ADA Legal Guidance Webinar',
+        eventType: 'NAIS Webinar',
+        category: 'Legal, Student Support',
+        location: 'Online',
+        description: 'Explore best practices for ensuring your school complies with the Americans with Disabilities Act (ADA) for both students and employees.'
+    },
+    { 
+        date: '2025-10-20', 
+        title: 'NAIS Annual Conference',
+        eventType: 'Conference',
+        category: 'All',
+        location: 'Online',
+        description: 'The premier professional development and networking event for independent school leaders from around the world.' 
+    }
+]);
     const [showSuggestionModal, setShowSuggestionModal] = useState(false);
     const [suggestedUpdate, setSuggestedUpdate] = useState("");
     const suggestionSectionRef = useRef("");
@@ -1476,107 +1518,52 @@ export default function App() {
     };
        
     const CALENDAR = () => {
-        const [currentDate, setCurrentDate] = useState(new Date(2025, 7, 1));
-        const [events, setEvents] = useState([
-            { date: '2025-08-09', title: 'Head of School - Town Hall' },
-            { date: '2025-08-11', title: 'FMLA Guidance webinar' },
-            { date: '2025-08-15', title: 'Board of Trustees Meeting' },
-            { date: '2025-08-25', title: 'ADA Legal Guidance webinar' },
-            { date: '2025-10-20', title: 'NAIS Annual Conference' }
-        ]);
-        const [showEventModal, setShowEventModal] = useState(false);
-        const [selectedDate, setSelectedDate] = useState(null);
-        const [newEventTitle, setNewEventTitle] = useState("");
+       const CALENDAR = () => {
+    return (
+        <div className="max-w-6xl mx-auto">
+            <h1 className="text-3xl font-bold text-center mb-8">Calendar of Events</h1>
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-2xl">
+                
+                {/* --- Header Row --- */}
+                <div className="hidden md:grid grid-cols-10 gap-4 px-4 pb-2 border-b-2 border-gray-200 font-bold text-gray-600">
+                    <div className="col-span-1">DATE</div>
+                    <div className="col-span-2">EVENT TYPE</div>
+                    <div className="col-span-2">CATEGORY</div>
+                    <div className="col-span-4">NAME</div>
+                    <div className="col-span-1">LOCATION</div>
+                </div>
 
-        const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
-        const firstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
+                {/* --- Events List --- */}
+                <div className="space-y-4 mt-4">
+                    {events.map((event, index) => (
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-10 gap-4 p-4 rounded-lg bg-gray-50 hover:bg-gray-100 border-l-4 border-blue-500">
+                            
+                            <div className="md:hidden font-bold text-gray-500 text-xs">DATE</div>
+                            <div className="col-span-1 font-semibold text-gray-800">
+                                {new Date(event.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                            </div>
 
-        const handleDayClick = (day) => {
-            const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            setSelectedDate(dateStr);
-            setShowEventModal(true);
-        };
-
-        const handleSaveEvent = () => {
-            if (newEventTitle && selectedDate) {
-                setEvents([...events, { date: selectedDate, title: newEventTitle }]);
-                setShowEventModal(false);
-                setNewEventTitle("");
-                setSelectedDate(null);
-            }
-        };
-
-        const renderCalendar = () => {
-            const month = currentDate.getMonth();
-            const year = currentDate.getFullYear();
-            const numDays = daysInMonth(month, year);
-            const startDay = firstDayOfMonth(month, year);
-            const days = [];
-
-            for (let i = 0; i < startDay; i++) {
-                days.push(<div key={`empty-${i}`} className="border border-gray-200"></div>);
-            }
-
-            for (let i = 1; i <= numDays; i++) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                const dayEvents = events.filter(e => e.date === dateStr);
-                days.push(
-                    <div
-                        key={i}
-                        className="border border-gray-200 p-2 cursor-pointer hover:bg-blue-50 flex flex-col min-h-[120px]"
-                        onClick={() => handleDayClick(i)}
-                    >
-                        <div className="font-bold">{i}</div>
-                        <div className="mt-1 space-y-1 flex-grow">
-                            {dayEvents.map((event, idx) => (
-                                <div key={idx} className="bg-blue-500 text-white text-xs rounded px-2 py-1 whitespace-normal">
-                                    {event.title}
-                                </div>
-                            ))}
+                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">EVENT TYPE</div>
+                            <div className="col-span-2 text-gray-600">{event.eventType}</div>
+                            
+                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">CATEGORY</div>
+                            <div className="col-span-2 text-gray-600">{event.category}</div>
+                            
+                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">NAME</div>
+                            <div className="col-span-4">
+                                <h3 className="font-bold text-blue-800">{event.title}</h3>
+                                <p className="mt-1 text-gray-700 text-sm">{event.description}</p>
+                            </div>
+                            
+                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">LOCATION</div>
+                            <div className="col-span-1 text-gray-600">{event.location}</div>
                         </div>
-                    </div>
-                );
-            }
-            return days;
-        };
-
-        return (
-            <div className="max-w-6xl mx-auto">
-                 <h1 className="text-3xl font-bold text-center mb-6">Calendar of Important Events, Conferences & Meetings</h1>
-                 <div className="bg-white p-6 rounded-2xl shadow-2xl">
-                    <div className="flex justify-between items-center mb-4">
-                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} className="p-2 rounded-md hover:bg-gray-200"><ChevronLeft /></button>
-                        <h2 className="text-2xl font-bold">{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
-                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} className="p-2 rounded-md hover:bg-gray-200"><ChevronRight /></button>
-                    </div>
-                    <div className="grid grid-cols-7 text-center font-bold text-gray-600">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => <div key={day} className="py-2">{day}</div>)}
-                    </div>
-                    <div className="grid grid-cols-7 auto-rows-fr">
-                        {renderCalendar()}
-                    </div>
-                 </div>
-                 {showEventModal && (
-                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                           <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full">
-                               <h3 className="text-xl font-bold mb-4">Add Event for {new Date(selectedDate + 'T00:00:00').toLocaleDateString()}</h3>
-                               <input
-                                   type="text"
-                                   value={newEventTitle}
-                                   onChange={(e) => setNewEventTitle(e.target.value)}
-                                   placeholder="Event Title"
-                                   className="w-full p-2 border rounded-md mb-4"
-                               />
-                               <div className="flex justify-end gap-2">
-                                   <button className="rounded-lg px-4 py-2 border" onClick={() => setShowEventModal(false)}>Cancel</button>
-                                   <button className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg" onClick={handleSaveEvent}>Save Event</button>
-                               </div>
-                           </div>
-                       </div>
-                 )}
+                    ))}
+                </div>
             </div>
-        );
-    };
+        </div>
+    );
+};
     
     // --- SIDEBAR DATA ---
     const SIDEBAR_LINKS = [
