@@ -1312,6 +1312,7 @@ export default function App() {
     const [isSectionLanguageOpen, setIsSectionLanguageOpen] = useState(false);
     const [modalSection, setModalSection] = useState(null);
     const [viewedAlert, setViewedAlert] = useState(null);
+    const [attendingEvent, setAttendingEvent] = useState(null); 
     
     // Q&A State
     const [hosQaQuestion, setHosQaQuestion] = useState("");
@@ -1517,21 +1518,20 @@ export default function App() {
         setLegalAnswer(null);
     };
        
-    const CALENDAR = () => {
+ const CALENDAR = () => {
     return (
         <div className="max-w-7xl mx-auto">
             <h1 className="text-3xl font-bold text-center mb-8">Calendar of Events</h1>
-            {/* STYLING: Changed to the dark theme background to match other cards */}
             <div className="bg-[#4B5C64] p-4 sm:p-6 rounded-2xl shadow-2xl">
                 
                 {/* --- Header Row --- */}
-                {/* STYLING: Adjusted grid columns, font size, and colors for better spacing and readability */}
                 <div className="hidden md:grid grid-cols-12 gap-6 px-4 pb-3 border-b-2 border-gray-500 font-bold text-sm text-gray-300">
                     <div className="col-span-2">DATE</div>
-                    <div className="col-span-2">EVENT TYPE</div>
-                    <div className="col-span-2">CATEGORY</div>
-                    <div className="col-span-5">NAME</div>
-                    <div className="col-span-1 text-right">LOCATION</div>
+                    <div className="col-span-2 text-white">EVENT TYPE</div> {/* Changed to white */}
+                    <div className="col-span-2 text-white">CATEGORY</div>  {/* Changed to white */}
+                    <div className="col-span-4">NAME</div> {/* Reduced to col-span-4 to make space for button */}
+                    <div className="col-span-1 text-right text-white">LOCATION</div> {/* Changed to white */}
+                    <div className="col-span-1 text-right"></div> {/* Column for the Attend button */}
                 </div>
 
                 {/* --- Events List --- */}
@@ -1547,22 +1547,32 @@ export default function App() {
 
                             {/* --- EVENT TYPE --- */}
                             <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">EVENT TYPE</div>
-                            <div className="col-span-12 md:col-span-2 text-gray-300">{event.eventType}</div>
+                            <div className="col-span-12 md:col-span-2 text-white">{event.eventType}</div> {/* Changed to white */}
                             
                             {/* --- CATEGORY --- */}
                             <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">CATEGORY</div>
-                            <div className="col-span-12 md:col-span-2 text-gray-300">{event.category}</div>
+                            <div className="col-span-12 md:col-span-2 text-white">{event.category}</div> {/* Changed to white */}
                             
                             {/* --- NAME & DESCRIPTION --- */}
                             <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">NAME</div>
-                            <div className="col-span-12 md:col-span-5">
+                            <div className="col-span-12 md:col-span-4"> {/* Reduced to col-span-4 */}
                                 <h3 className="font-bold text-[#faecc4]">{event.title}</h3>
                                 <p className="mt-1 text-gray-200 text-sm">{event.description}</p>
                             </div>
                             
                             {/* --- LOCATION --- */}
                             <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">LOCATION</div>
-                            <div className="col-span-12 md:col-span-1 text-left md:text-right text-gray-300">{event.location}</div>
+                            <div className="col-span-12 md:col-span-1 text-left md:text-right text-white">{event.location}</div> {/* Changed to white */}
+
+                            {/* --- ATTEND BUTTON --- */}
+                            <div className="col-span-12 md:col-span-1 flex items-center justify-end md:justify-center">
+                                <button 
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md transition-colors"
+                                    onClick={() => setAttendingEvent(event)} // Open modal with this event
+                                >
+                                    Attend
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
