@@ -1518,44 +1518,51 @@ export default function App() {
     };
        
     const CALENDAR = () => {
-        return (
-        <div className="max-w-6xl mx-auto">
+    return (
+        <div className="max-w-7xl mx-auto">
             <h1 className="text-3xl font-bold text-center mb-8">Calendar of Events</h1>
-            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-2xl">
+            {/* STYLING: Changed to the dark theme background to match other cards */}
+            <div className="bg-[#4B5C64] p-4 sm:p-6 rounded-2xl shadow-2xl">
                 
                 {/* --- Header Row --- */}
-                <div className="hidden md:grid grid-cols-10 gap-4 px-4 pb-2 border-b-2 border-gray-200 font-bold text-gray-600">
-                    <div className="col-span-1">DATE</div>
+                {/* STYLING: Adjusted grid columns, font size, and colors for better spacing and readability */}
+                <div className="hidden md:grid grid-cols-12 gap-6 px-4 pb-3 border-b-2 border-gray-500 font-bold text-sm text-gray-300">
+                    <div className="col-span-2">DATE</div>
                     <div className="col-span-2">EVENT TYPE</div>
                     <div className="col-span-2">CATEGORY</div>
-                    <div className="col-span-4">NAME</div>
-                    <div className="col-span-1">LOCATION</div>
+                    <div className="col-span-5">NAME</div>
+                    <div className="col-span-1 text-right">LOCATION</div>
                 </div>
 
                 {/* --- Events List --- */}
                 <div className="space-y-4 mt-4">
                     {events.map((event, index) => (
-                        <div key={index} className="grid grid-cols-1 md:grid-cols-10 gap-4 p-4 rounded-lg bg-gray-50 hover:bg-gray-100 border-l-4 border-blue-500">
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-3 p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors border-l-4 border-[#faecc4]">
                             
-                            <div className="md:hidden font-bold text-gray-500 text-xs">DATE</div>
-                            <div className="col-span-1 font-semibold text-gray-800">
+                            {/* --- DATE --- */}
+                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase">DATE</div>
+                            <div className="col-span-12 md:col-span-2 font-semibold text-white">
                                 {new Date(event.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: 'numeric' })}
                             </div>
 
-                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">EVENT TYPE</div>
-                            <div className="col-span-2 text-gray-600">{event.eventType}</div>
+                            {/* --- EVENT TYPE --- */}
+                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">EVENT TYPE</div>
+                            <div className="col-span-12 md:col-span-2 text-gray-300">{event.eventType}</div>
                             
-                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">CATEGORY</div>
-                            <div className="col-span-2 text-gray-600">{event.category}</div>
+                            {/* --- CATEGORY --- */}
+                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">CATEGORY</div>
+                            <div className="col-span-12 md:col-span-2 text-gray-300">{event.category}</div>
                             
-                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">NAME</div>
-                            <div className="col-span-4">
-                                <h3 className="font-bold text-blue-800">{event.title}</h3>
-                                <p className="mt-1 text-gray-700 text-sm">{event.description}</p>
+                            {/* --- NAME & DESCRIPTION --- */}
+                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">NAME</div>
+                            <div className="col-span-12 md:col-span-5">
+                                <h3 className="font-bold text-[#faecc4]">{event.title}</h3>
+                                <p className="mt-1 text-gray-200 text-sm">{event.description}</p>
                             </div>
                             
-                            <div className="md:hidden font-bold text-gray-500 text-xs mt-2">LOCATION</div>
-                            <div className="col-span-1 text-gray-600">{event.location}</div>
+                            {/* --- LOCATION --- */}
+                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">LOCATION</div>
+                            <div className="col-span-12 md:col-span-1 text-left md:text-right text-gray-300">{event.location}</div>
                         </div>
                     ))}
                 </div>
