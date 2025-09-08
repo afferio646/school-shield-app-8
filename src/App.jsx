@@ -1276,7 +1276,7 @@ export default function App() {
     { 
         date: '2025-09-11', 
         title: 'FMLA Guidance Webinar',
-        eventType: 'NAIS Webinar',
+        eventType: 'Webinar',
         category: 'Human Resources, Legal',
         location: 'Online',
         description: 'This session provides an overview of the Family and Medical Leave Act (FMLA), focusing on compliance requirements for independent schools.'
@@ -1292,18 +1292,18 @@ export default function App() {
     { 
         date: '2025-09-25', 
         title: 'ADA Legal Guidance Webinar',
-        eventType: 'NAIS Webinar',
+        eventType: 'Webinar',
         category: 'Legal, Student Support',
         location: 'Online',
         description: 'Explore best practices for ensuring your school complies with the Americans with Disabilities Act (ADA) for both students and employees.'
     },
     { 
         date: '2025-10-20', 
-        title: 'NAIS Annual Conference',
+        title: 'Weekend Workshop Conference',
         eventType: 'Conference',
         category: 'All',
         location: 'Online',
-        description: 'The premier professional development and networking event for independent school leaders from around the world.' 
+        description: 'The premier professional development and networking event for independent school leaders.' 
     }
 ]);
     const [showSuggestionModal, setShowSuggestionModal] = useState(false);
