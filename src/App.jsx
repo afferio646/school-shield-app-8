@@ -1518,8 +1518,7 @@ export default function App() {
     };
        
     const CALENDAR = () => {
-       const CALENDAR = () => {
-    return (
+        return (
         <div className="max-w-6xl mx-auto">
             <h1 className="text-3xl font-bold text-center mb-8">Calendar of Events</h1>
             <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-2xl">
