@@ -1458,6 +1458,9 @@ export default function App() {
     };
        
 const CALENDAR = () => {
+    // --- NEW: State for Modal ---
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    
     // State to manage the view ('list' or 'month')
     const [view, setView] = useState('list'); 
     // State to manage the month being displayed in the grid
@@ -1503,7 +1506,8 @@ const CALENDAR = () => {
                         {dayEvents.map((event, idx) => (
                             <button 
                                 key={idx} 
-                                onClick={() => setAttendingEvent(event)}
+                                // --- MODIFIED: onClick to open modal ---
+                                onClick={() => setSelectedEvent(event)}
                                 className="block w-full text-left bg-emerald-800 hover:bg-emerald-700 text-white text-xs rounded px-2 py-1 whitespace-normal transition-colors"
                             >
                                 {event.title}
@@ -1571,7 +1575,7 @@ const CALENDAR = () => {
                         </div>
                     </>
                 ) : (
-                    // --- Month Grid View (New Code) ---
+                    // --- Month Grid View (Existing Code) ---
                     <div>
                         <div className="flex justify-between items-center mb-4 px-2">
                             <button onClick={() => changeMonth(-1)} className="p-2 rounded-md hover:bg-gray-600 text-white"><ChevronLeft /></button>
@@ -1587,6 +1591,81 @@ const CALENDAR = () => {
                     </div>
                 )}
             </div>
+
+            {/* --- NEW: Event Detail Modal --- */}
+            {selectedEvent && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
+                    onClick={() => setSelectedEvent(null)} // Click on backdrop to close
+                >
+                    <div
+                        className="bg-gray-700 rounded-lg shadow-2xl w-full max-w-2xl p-6 relative border-l-4 border-[#faecc4]"
+                        onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
+                    >
+                        {/* Close Icon Button */}
+                        <button
+                            onClick={() => setSelectedEvent(null)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                            aria-label="Close"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+
+                        <div className="space-y-4">
+                            {/* Mimicking the list view structure for the modal content */}
+                            <div>
+                                <div className="font-bold text-gray-400 text-xs uppercase">DATE</div>
+                                <div className="font-semibold text-white">{new Date(selectedEvent.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <div className="font-bold text-gray-400 text-xs uppercase">EVENT TYPE</div>
+                                    <div className="text-white">{selectedEvent.eventType}</div>
+                                </div>
+                                <div>
+                                    <div className="font-bold text-gray-400 text-xs uppercase">CATEGORY</div>
+                                    <div className="text-white">{selectedEvent.category}</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="font-bold text-gray-400 text-xs uppercase">NAME</div>
+                                <h3 className="font-bold text-2xl text-[#faecc4]">{selectedEvent.title}</h3>
+                            </div>
+
+                            <div>
+                                <div className="font-bold text-gray-400 text-xs uppercase">DESCRIPTION</div>
+                                <p className="mt-1 text-gray-200 text-sm">{selectedEvent.description}</p>
+                            </div>
+
+                            <div>
+                                <div className="font-bold text-gray-400 text-xs uppercase">LOCATION</div>
+                                <div className="text-white">{selectedEvent.location}</div>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons at the bottom of the modal */}
+                        <div className="mt-8 flex justify-end items-center gap-4">
+                            <button
+                                onClick={() => setSelectedEvent(null)}
+                                className="bg-gray-600 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-colors"
+                            >
+                                Close
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setAttendingEvent(selectedEvent);
+                                    setSelectedEvent(null); // Close modal before navigating
+                                }}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-colors"
+                            >
+                                Attend
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
