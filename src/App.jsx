@@ -278,68 +278,6 @@ function HandbookVulnerabilitiesCard({ sections, onSectionLinkClick }) {
     );
 }
 
-
-// --- Calendar Modal Component ---
-function CalendarModal({ auditType, onClose }) {
-    const [date, setDate] = useState(new Date());
-    const [selectedDate, setSelectedDate] = useState(null);
-
-    const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
-
-    const renderCalendar = () => {
-        const month = date.getMonth();
-        const year = date.getFullYear();
-        const numDays = daysInMonth(month, year);
-        const startDay = firstDayOfMonth(month, year);
-        const days = [];
-
-        for (let i = 0; i < startDay; i++) {
-            days.push(<div key={`empty-${i}`} className="p-1 text-center"></div>);
-        }
-
-        for (let i = 1; i <= numDays; i++) {
-            const currentDate = new Date(year, month, i);
-            const isSelected = selectedDate && currentDate.toDateString() === selectedDate.toDateString();
-            days.push(
-                <div
-                    key={i}
-                    className={`p-1 text-center cursor-pointer rounded-full text-sm ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-gray-600'}`}
-                    onClick={() => setSelectedDate(currentDate)}
-                >
-                    {i}
-                </div>
-            );
-        }
-        return days;
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-gray-700 p-6 rounded-2xl shadow-2xl max-w-sm w-full text-white">
-                <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-[#faecc4]">
-                    <Calendar className="text-blue-400" size={20}/> Select date for {auditType} audit
-                </h3>
-                <div className="flex justify-between items-center mb-3">
-                    <button onClick={() => setDate(new Date(date.setMonth(date.getMonth() - 1)))} className="p-1 rounded-md hover:bg-gray-600"><ChevronLeft /></button>
-                    <div className="font-semibold">{date.toLocaleString('default', { month: 'long', year: 'numeric' })}</div>
-                    <button onClick={() => setDate(new Date(date.setMonth(date.getMonth() + 1)))} className="p-1 rounded-md hover:bg-gray-600"><ChevronRight /></button>
-                </div>
-                <div className="grid grid-cols-7 gap-1 text-xs">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => <div key={day} className="font-bold text-center text-gray-400">{day}</div>)}
-                    {renderCalendar()}
-                </div>
-                <div className="flex justify-end gap-2 mt-4">
-                    <button className="rounded-lg px-4 py-1 text-sm bg-gray-600 hover:bg-gray-500 border border-gray-500" onClick={onClose}>Cancel</button>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-1 text-sm rounded-lg" onClick={() => { console.log(`Scheduled ${auditType} audit for ${selectedDate}`); onClose(); }}>
-                        Schedule Audit
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 // --- Report Viewer Modal Component ---
 const ReportViewerModal = React.memo(function ReportViewerModal({ report, scenarios, onClose, onSectionLinkClick, onLegalLinkClick }) {
     if (!report) return null;
@@ -1520,64 +1458,134 @@ export default function App() {
     };
        
 const CALENDAR = () => {
+    // State to manage the view ('list' or 'month')
+    const [view, setView] = useState('list'); 
+    // State to manage the month being displayed in the grid
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    // --- Helper functions for the Month Grid View ---
+    const changeMonth = (amount) => {
+        setCurrentDate(prevDate => {
+            const newDate = new Date(prevDate);
+            newDate.setMonth(newDate.getMonth() + amount);
+            return newDate;
+        });
+    };
+
+    const renderMonthGrid = () => {
+        const month = currentDate.getMonth();
+        const year = currentDate.getFullYear();
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const days = [];
+
+        // Add blank cells for days before the 1st of the month
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            days.push(<div key={`empty-${i}`} className="border border-gray-700 bg-gray-800"></div>);
+        }
+
+        // Add cells for each day of the month
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayDate = new Date(year, month, i);
+            const today = new Date();
+            const isToday = dayDate.toDateString() === today.toDateString();
+
+            // Find events for the current day
+            const dayEvents = events.filter(event => {
+                const eventDate = new Date(event.date + 'T12:00:00Z');
+                return eventDate.toDateString() === dayDate.toDateString();
+            });
+
+            days.push(
+                <div key={i} className={`border border-gray-700 p-2 flex flex-col ${isToday ? 'bg-blue-900 bg-opacity-40' : ''}`}>
+                    <div className={`font-bold ${isToday ? 'text-white' : 'text-gray-300'}`}>{i}</div>
+                    <div className="mt-1 space-y-1 flex-grow overflow-y-auto">
+                        {dayEvents.map((event, idx) => (
+                            <button 
+                                key={idx} 
+                                onClick={() => setAttendingEvent(event)}
+                                className="block w-full text-left bg-emerald-800 hover:bg-emerald-700 text-white text-xs rounded px-2 py-1 whitespace-normal transition-colors"
+                            >
+                                {event.title}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+        return days;
+    };
+
+
     return (
         <div className="max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-center mb-8">Calendar of Events</h1>
+            <h1 className="text-3xl font-bold text-center mb-4">Calendar of Events</h1>
+
+            {/* --- View Toggle Buttons --- */}
+            <div className="flex justify-center mb-6">
+                <div className="flex items-center bg-gray-700 rounded-lg p-1">
+                    <button
+                        onClick={() => setView('list')}
+                        className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${view === 'list' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-600'}`}
+                    >
+                        List View
+                    </button>
+                    <button
+                        onClick={() => setView('month')}
+                        className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${view === 'month' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-600'}`}
+                    >
+                        Month View
+                    </button>
+                </div>
+            </div>
+
+            {/* --- Conditional Rendering based on the selected view --- */}
             <div className="bg-[#4B5C64] p-4 sm:p-6 rounded-2xl shadow-2xl">
-                
-                {/* --- Header Row --- */}
-                {/* FIX: All headers are now white and column spacing is adjusted. */}
-                <div className="hidden md:grid grid-cols-12 gap-6 px-4 pb-3 border-b-2 border-gray-500 font-bold text-sm text-white">
-                    <div className="col-span-2">DATE</div>
-                    <div className="col-span-2">EVENT TYPE</div>
-                    <div className="col-span-2">CATEGORY</div>
-                    <div className="col-span-4">NAME</div>
-                    <div className="col-span-2 text-center">LOCATION</div>
-                </div>
-
-                {/* --- Events List --- */}
-                <div className="space-y-4 mt-4">
-                    {events.map((event, index) => (
-                        <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-3 p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors border-l-4 border-[#faecc4]">
-                            
-                            {/* --- DATE --- */}
-                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase">DATE</div>
-                            <div className="col-span-12 md:col-span-2 font-semibold text-white flex items-center">
-                                {new Date(event.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: 'numeric' })}
-                            </div>
-
-                            {/* --- EVENT TYPE --- */}
-                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">EVENT TYPE</div>
-                            <div className="col-span-12 md:col-span-2 text-white flex items-center">{event.eventType}</div>
-                            
-                            {/* --- CATEGORY --- */}
-                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">CATEGORY</div>
-                            <div className="col-span-12 md:col-span-2 text-white flex items-center">{event.category}</div>
-                            
-                            {/* --- NAME & DESCRIPTION --- */}
-                            <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">NAME</div>
-                            <div className="col-span-12 md:col-span-4">
-                                <h3 className="font-bold text-[#faecc4]">{event.title}</h3>
-                                <p className="mt-1 text-gray-200 text-sm">{event.description}</p>
-                            </div>
-                            
-                            {/* --- LOCATION & ATTEND BUTTON --- */}
-                            {/* FIX: Location and Button are now in the same column for better spacing. */}
-                            <div className="col-span-12 md:col-span-2 flex md:flex-col items-start md:items-center justify-between md:justify-center gap-2">
-                                <div>
-                                    <div className="md:hidden font-bold text-gray-400 text-xs uppercase">LOCATION</div>
-                                    <div className="text-white text-left md:text-center">{event.location}</div>
-                                </div>
-                                <button 
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md transition-colors"
-                                    onClick={() => setAttendingEvent(event)}
-                                >
-                                    Attend
-                                </button>
-                            </div>
+                {view === 'list' ? (
+                    // --- List View (Existing Code) ---
+                    <>
+                        <div className="hidden md:grid grid-cols-12 gap-6 px-4 pb-3 border-b-2 border-gray-500 font-bold text-sm text-white">
+                            <div className="col-span-2">DATE</div>
+                            <div className="col-span-2">EVENT TYPE</div>
+                            <div className="col-span-2">CATEGORY</div>
+                            <div className="col-span-4">NAME</div>
+                            <div className="col-span-2 text-center">LOCATION</div>
                         </div>
-                    ))}
-                </div>
+                        <div className="space-y-4 mt-4">
+                            {events.map((event, index) => (
+                                <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-3 p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors border-l-4 border-[#faecc4]">
+                                    <div className="md:hidden font-bold text-gray-400 text-xs uppercase">DATE</div>
+                                    <div className="col-span-12 md:col-span-2 font-semibold text-white flex items-center">{new Date(event.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: 'numeric' })}</div>
+                                    <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">EVENT TYPE</div>
+                                    <div className="col-span-12 md:col-span-2 text-white flex items-center">{event.eventType}</div>
+                                    <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">CATEGORY</div>
+                                    <div className="col-span-12 md:col-span-2 text-white flex items-center">{event.category}</div>
+                                    <div className="md:hidden font-bold text-gray-400 text-xs uppercase mt-2 md:mt-0">NAME</div>
+                                    <div className="col-span-12 md:col-span-4"><h3 className="font-bold text-[#faecc4]">{event.title}</h3><p className="mt-1 text-gray-200 text-sm">{event.description}</p></div>
+                                    <div className="col-span-12 md:col-span-2 flex md:flex-col items-start md:items-center justify-between md:justify-center gap-2">
+                                        <div><div className="md:hidden font-bold text-gray-400 text-xs uppercase">LOCATION</div><div className="text-white text-left md:text-center">{event.location}</div></div>
+                                        <button onClick={() => setAttendingEvent(event)} className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md transition-colors">Attend</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    // --- Month Grid View (New Code) ---
+                    <div>
+                        <div className="flex justify-between items-center mb-4 px-2">
+                            <button onClick={() => changeMonth(-1)} className="p-2 rounded-md hover:bg-gray-600 text-white"><ChevronLeft /></button>
+                            <h2 className="text-2xl font-bold text-white">{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+                            <button onClick={() => changeMonth(1)} className="p-2 rounded-md hover:bg-gray-600 text-white"><ChevronRight /></button>
+                        </div>
+                        <div className="grid grid-cols-7 text-center font-bold text-gray-300">
+                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => <div key={day} className="py-2 border-b border-gray-700">{day}</div>)}
+                        </div>
+                        <div className="grid grid-cols-7 auto-rows-fr min-h-[500px]">
+                            {renderMonthGrid()}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
