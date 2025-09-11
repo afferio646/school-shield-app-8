@@ -1203,8 +1203,6 @@ export default function App() {
       const [page, setPage] = useState('dashboard');
       const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
       const [calendarView, setCalendarView] = useState('list');
-      const [attendingEvent, setAttendingEvent] = useState(null);
-
       const handleSetAttendingEvent = (event, view) => {
       setAttendingEvent(event);
       setCalendarView(view || 'list'); 
