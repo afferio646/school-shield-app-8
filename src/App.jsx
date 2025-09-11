@@ -1463,12 +1463,13 @@ export default function App() {
         setLegalAnswer(null);
     };
        
-const CALENDAR = () => {
-    // --- NEW: State for Modal ---
+const CALENDAR = ({ initialView, setAttendingEvent }) => {
+    // --- State for Modal ---
     const [selectedEvent, setSelectedEvent] = useState(null);
     
     // State to manage the view ('list' or 'month')
-    const [view, setView] = useState('list'); 
+    const [view, setView] = useState(initialView || 'list'); 
+    
     // State to manage the month being displayed in the grid
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -1488,18 +1489,15 @@ const CALENDAR = () => {
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const days = [];
 
-        // Add blank cells for days before the 1st of the month
         for (let i = 0; i < firstDayOfMonth; i++) {
             days.push(<div key={`empty-${i}`} className="border border-gray-700 bg-gray-800"></div>);
         }
 
-        // Add cells for each day of the month
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDate = new Date(year, month, i);
             const today = new Date();
             const isToday = dayDate.toDateString() === today.toDateString();
 
-            // Find events for the current day
             const dayEvents = events.filter(event => {
                 const eventDate = new Date(event.date + 'T12:00:00Z');
                 return eventDate.toDateString() === dayDate.toDateString();
@@ -1512,7 +1510,6 @@ const CALENDAR = () => {
                         {dayEvents.map((event, idx) => (
                             <button 
                                 key={idx} 
-                                // --- MODIFIED: onClick to open modal ---
                                 onClick={() => setSelectedEvent(event)}
                                 className="block w-full text-left bg-emerald-800 hover:bg-emerald-700 text-white text-xs rounded px-2 py-1 whitespace-normal transition-colors"
                             >
@@ -1552,7 +1549,7 @@ const CALENDAR = () => {
             {/* --- Conditional Rendering based on the selected view --- */}
             <div className="bg-[#4B5C64] p-4 sm:p-6 rounded-2xl shadow-2xl">
                 {view === 'list' ? (
-                    // --- List View (Existing Code) ---
+                    // --- List View ---
                     <>
                         <div className="hidden md:grid grid-cols-12 gap-6 px-4 pb-3 border-b-2 border-gray-500 font-bold text-sm text-white">
                             <div className="col-span-2">DATE</div>
@@ -1574,14 +1571,14 @@ const CALENDAR = () => {
                                     <div className="col-span-12 md:col-span-4"><h3 className="font-bold text-[#faecc4]">{event.title}</h3><p className="mt-1 text-gray-200 text-sm">{event.description}</p></div>
                                     <div className="col-span-12 md:col-span-2 flex md:flex-col items-start md:items-center justify-between md:justify-center gap-2">
                                         <div><div className="md:hidden font-bold text-gray-400 text-xs uppercase">LOCATION</div><div className="text-white text-left md:text-center">{event.location}</div></div>
-                                        <button onClick={() => setAttendingEvent(event)} className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md transition-colors">Attend</button>
+                                        <button onClick={() => setAttendingEvent(event, view)} className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md transition-colors">Attend</button>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </>
                 ) : (
-                    // --- Month Grid View (Existing Code) ---
+                    // --- Month Grid View ---
                     <div>
                         <div className="flex justify-between items-center mb-4 px-2">
                             <button onClick={() => changeMonth(-1)} className="p-2 rounded-md hover:bg-gray-600 text-white"><ChevronLeft /></button>
@@ -1598,17 +1595,16 @@ const CALENDAR = () => {
                 )}
             </div>
 
-            {/* --- NEW: Event Detail Modal --- */}
+            {/* --- Event Detail Modal --- */}
             {selectedEvent && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
-                    onClick={() => setSelectedEvent(null)} // Click on backdrop to close
+                    onClick={() => setSelectedEvent(null)}
                 >
                     <div
                         className="bg-gray-700 rounded-lg shadow-2xl w-full max-w-2xl p-6 relative border-l-4 border-[#faecc4]"
-                        onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Close Icon Button */}
                         <button
                             onClick={() => setSelectedEvent(null)}
                             className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
@@ -1618,12 +1614,10 @@ const CALENDAR = () => {
                         </button>
 
                         <div className="space-y-4">
-                            {/* Mimicking the list view structure for the modal content */}
                             <div>
                                 <div className="font-bold text-gray-400 text-xs uppercase">DATE</div>
                                 <div className="font-semibold text-white">{new Date(selectedEvent.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                             </div>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <div className="font-bold text-gray-400 text-xs uppercase">EVENT TYPE</div>
@@ -1634,24 +1628,20 @@ const CALENDAR = () => {
                                     <div className="text-white">{selectedEvent.category}</div>
                                 </div>
                             </div>
-
                             <div>
                                 <div className="font-bold text-gray-400 text-xs uppercase">NAME</div>
                                 <h3 className="font-bold text-2xl text-[#faecc4]">{selectedEvent.title}</h3>
                             </div>
-
                             <div>
                                 <div className="font-bold text-gray-400 text-xs uppercase">DESCRIPTION</div>
                                 <p className="mt-1 text-gray-200 text-sm">{selectedEvent.description}</p>
                             </div>
-
                             <div>
                                 <div className="font-bold text-gray-400 text-xs uppercase">LOCATION</div>
                                 <div className="text-white">{selectedEvent.location}</div>
                             </div>
                         </div>
 
-                        {/* Action Buttons at the bottom of the modal */}
                         <div className="mt-8 flex justify-end items-center gap-4">
                             <button
                                 onClick={() => setSelectedEvent(null)}
@@ -1661,8 +1651,8 @@ const CALENDAR = () => {
                             </button>
                             <button
                                 onClick={() => {
-                                    setAttendingEvent(selectedEvent);
-                                    setSelectedEvent(null); // Close modal before navigating
+                                    setAttendingEvent(selectedEvent, view);
+                                    setSelectedEvent(null);
                                 }}
                                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-colors"
                             >
