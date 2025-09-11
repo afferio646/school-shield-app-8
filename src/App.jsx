@@ -1200,17 +1200,16 @@ const HOSQA = ({
 };
 
 export default function App() {
-    const [page, setPage] = useState("dashboard");
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [page, setPage] = useState('dashboard');
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [calendarView, setCalendarView] = useState('list');
-    const [attendingEvent, setAttendingEvent] = useState(null);
-    const handleSetAttendingEvent = (event, view) => {
-    setAttendingEvent(event);
-    setCalendarView(view || 'list'); 
+      const [page, setPage] = useState('dashboard');
+      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+      const [calendarView, setCalendarView] = useState('list');
+      const [attendingEvent, setAttendingEvent] = useState(null);
+
+      const handleSetAttendingEvent = (event, view) => {
+      setAttendingEvent(event);
+      setCalendarView(view || 'list'); 
 };
-    const [events, setEvents] = useState([
+      const [events, setEvents] = useState([
       
     { 
         date: '2025-09-09', 
