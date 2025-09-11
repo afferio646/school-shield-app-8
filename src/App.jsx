@@ -1463,17 +1463,20 @@ export default function App() {
         setLegalAnswer(null);
     };
        
-const CALENDAR = ({ initialView, setAttendingEvent }) => {
-    // --- State for Modal ---
+const CALENDAR = ({ initialView, setAttendingEvent, events }) => {
+    // State to manage the modal
     const [selectedEvent, setSelectedEvent] = useState(null);
     
-    // State to manage the view ('list' or 'month')
+    // State to manage the view ('list' or 'month'), now correctly initialized
     const [view, setView] = useState(initialView || 'list'); 
     
-    // State to manage the month being displayed in the grid
+    // State to manage the month being displayed
     const [currentDate, setCurrentDate] = useState(new Date());
 
-    // --- Helper functions for the Month Grid View ---
+    // --- Placeholder Icons to prevent errors ---
+    const ChevronLeft = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>;
+    const ChevronRight = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>;
+
     const changeMonth = (amount) => {
         setCurrentDate(prevDate => {
             const newDate = new Date(prevDate);
@@ -1528,28 +1531,19 @@ const CALENDAR = ({ initialView, setAttendingEvent }) => {
         <div className="max-w-7xl mx-auto">
             <h1 className="text-3xl font-bold text-center mb-4">Calendar of Events</h1>
 
-            {/* --- View Toggle Buttons --- */}
             <div className="flex justify-center mb-6">
                 <div className="flex items-center bg-gray-700 rounded-lg p-1">
-                    <button
-                        onClick={() => setView('list')}
-                        className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${view === 'list' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-600'}`}
-                    >
+                    <button onClick={() => setView('list')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${view === 'list' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-600'}`}>
                         List View
                     </button>
-                    <button
-                        onClick={() => setView('month')}
-                        className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${view === 'month' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-600'}`}
-                    >
+                    <button onClick={() => setView('month')} className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${view === 'month' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-600'}`}>
                         Month View
                     </button>
                 </div>
             </div>
 
-            {/* --- Conditional Rendering based on the selected view --- */}
             <div className="bg-[#4B5C64] p-4 sm:p-6 rounded-2xl shadow-2xl">
                 {view === 'list' ? (
-                    // --- List View ---
                     <>
                         <div className="hidden md:grid grid-cols-12 gap-6 px-4 pb-3 border-b-2 border-gray-500 font-bold text-sm text-white">
                             <div className="col-span-2">DATE</div>
@@ -1578,7 +1572,6 @@ const CALENDAR = ({ initialView, setAttendingEvent }) => {
                         </div>
                     </>
                 ) : (
-                    // --- Month Grid View ---
                     <div>
                         <div className="flex justify-between items-center mb-4 px-2">
                             <button onClick={() => changeMonth(-1)} className="p-2 rounded-md hover:bg-gray-600 text-white"><ChevronLeft /></button>
@@ -1595,24 +1588,12 @@ const CALENDAR = ({ initialView, setAttendingEvent }) => {
                 )}
             </div>
 
-            {/* --- Event Detail Modal --- */}
             {selectedEvent && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
-                    onClick={() => setSelectedEvent(null)}
-                >
-                    <div
-                        className="bg-gray-700 rounded-lg shadow-2xl w-full max-w-2xl p-6 relative border-l-4 border-[#faecc4]"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            onClick={() => setSelectedEvent(null)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-                            aria-label="Close"
-                        >
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4" onClick={() => setSelectedEvent(null)}>
+                    <div className="bg-gray-700 rounded-lg shadow-2xl w-full max-w-2xl p-6 relative border-l-4 border-[#faecc4]" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => setSelectedEvent(null)} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
-
                         <div className="space-y-4">
                             <div>
                                 <div className="font-bold text-gray-400 text-xs uppercase">DATE</div>
@@ -1641,21 +1622,11 @@ const CALENDAR = ({ initialView, setAttendingEvent }) => {
                                 <div className="text-white">{selectedEvent.location}</div>
                             </div>
                         </div>
-
                         <div className="mt-8 flex justify-end items-center gap-4">
-                            <button
-                                onClick={() => setSelectedEvent(null)}
-                                className="bg-gray-600 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-colors"
-                            >
+                            <button onClick={() => setSelectedEvent(null)} className="bg-gray-600 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-colors">
                                 Close
                             </button>
-                            <button
-                                onClick={() => {
-                                    setAttendingEvent(selectedEvent, view);
-                                    setSelectedEvent(null);
-                                }}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-colors"
-                            >
+                            <button onClick={() => { setAttendingEvent(selectedEvent, view); setSelectedEvent(null); }} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-colors">
                                 Attend
                             </button>
                         </div>
